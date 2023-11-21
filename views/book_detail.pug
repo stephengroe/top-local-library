@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  h1 Title: #{book.title}
+
+  p #[strong Author: ]
+    a(href=book.author.url) #{book.author.name}
+  p #[strong Summary:] #{book.summary}
+  p #[strong ISBN:] #{book.isbn}
+  p #[strong Genres:] 
+    each genre, index in book.genre
+      a(href=genre.url) #{genre.name}
+
+      // Add commas for all but last or only item
+      if book.genre.length > 1 && index < book.genre.length - 1
+        | ,
+  
+  h2 Copies
+
+  each copy in book_copies
+    hr
+    if copy.status === 'Available'
+      p.text-success #{copy.status}
+    else if copy.status === 'Maintenance'
+      p.text-danger #{copy.status}
+    else
+      p.text-warning #{copy.status}
+    
+    p #[strong Imprint:] #{copy.imprint}
+    p #[strong ID: ]
+      a(href copy.url) #{copy.id}
+
+
+

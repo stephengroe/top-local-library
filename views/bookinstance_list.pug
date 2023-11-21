@@ -14,6 +14,6 @@ block content
         else
           span.text-warning #{val.status}
         if val.status != 'Available'
-          span  (Due: #{val.due_back})
+          span  (Due: #{val.due_back_formatted})
     else
       li There are no copies in this library. Not much of a library, is it?

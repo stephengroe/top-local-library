@@ -26,7 +26,7 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render("genre_detail", {
-    title: "Genre Detail",
+    title: `Genre: ${genre.name}`,
     genre: genre,
     genre_books: booksInGenre,
   });

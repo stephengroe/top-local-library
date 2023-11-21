@@ -22,7 +22,7 @@ exports.book_instance_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render("bookinstance_detail", {
-    title: "Copy",
+    title: `Copy: ${copy.id}`,
     copy: copy,
   });
 });

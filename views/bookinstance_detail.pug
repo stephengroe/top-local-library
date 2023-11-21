@@ -2,4 +2,15 @@ extends layout
 
 block content
   h1 ID: #{copy.id}
-  
+  p #[strong Title:] 
+    a(href=copy.book.url) #{copy.book.title}
+  p #[strong Imprint:] #{copy.imprint}
+  p #[strong Status:] 
+    if copy.status === 'Available'
+      span.text-success #{copy.status}
+    else if copy.status === 'Maintenance'
+      span.text-danger #{copy.status}
+    else
+      span.text-warning #{copy.status}
+  if copy.status === 'Loaned'
+    p #[strong Due back:] #{copy.due_back_formatted}

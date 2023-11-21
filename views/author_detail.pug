@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Author: #{author.name}
+  p #{author.birth_year} - 
+    if author.death_year
+      |  #{author.death_year}
+    else
+      |  present
+  
+  h2 Books
+  each book in book_list
+    h3
+      a(href=book.url) #{book.title}
+    p #{book.summary}

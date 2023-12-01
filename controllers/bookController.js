@@ -152,7 +152,7 @@ exports.book_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display book update form on GET
 exports.book_update_get = asyncHandler(async (req, res, next) => {
-  const [book, allAuthors, allGenres] = Promise.all([
+  const [book, allAuthors, allGenres] = await Promise.all([
     Book.findById(req.params.id).populate('author').populate('genre').exec(),
     Author.find().sort({ family_name: 1 }).exec(),
     Genre.find().sort({ name: 1}).exec(),

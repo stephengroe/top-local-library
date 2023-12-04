@@ -127,10 +127,51 @@ exports.author_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display author update form on GET
 exports.author_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author update GET");
+  const author = await Author.findById(req.params.id);
+
+  if (author === null) {
+    res.redirect('/catalog/authors');
+    return;
+  }
+
+  res.render('author_form', {
+    title: 'Update Author',
+    author: author,
+  });
 });
 
 // Display author update form on GET
-exports.author_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Author update POST");
-});
+exports.author_update_post = [
+  body('first_name', 'First name must not be blank')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body('family_name', 'Family name must not be blank')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+   
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const author = new Author({
+      first_name: req.body.first_name,
+      family_name: req.body.family_name,
+      date_of_birth: req.body.date_of_birth,
+      date_of_death: req.body.date_of_death,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty) {
+      res.render('author_form', {
+        title: 'Update Author',
+        author: author,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      const updatedAuthor = await Author.findByIdAndUpdate(req.params.id, author);
+      res.redirect(updatedAuthor.url);
+    }
+  }),
+];

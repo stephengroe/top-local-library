@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  h1 #{title}
+
+  p #{book_instance.imprint}
+  p #[strong Status]: 
+    if book_instance.status === 'Available'
+      span.text-success #{book_instance.status}
+    else if book_instance.status === 'Maintenance'
+      span.text-danger #{book_instance.status}
+    else
+      span.text-warning #{book_instance.status}
+
+  p Are you sure you want to delete this copy?
+
+  form(method='POST' action='')
+    input#bookInstanceId.form-control(
+      type='hidden',
+      name='bookinstanceid',
+      required='true',
+      value=book_instance._id,
+    )
+    button.btn.btn-primary(type='submit') Delete

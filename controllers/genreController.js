@@ -2,6 +2,7 @@ const Genre = require('../models/genre');
 const Book = require('../models/book');
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const genre = require('../models/genre');
 
 // Display list of all Genres
 exports.genre_list = asyncHandler(async (req, res, next) => {
@@ -113,10 +114,37 @@ exports.genre_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display Genre update form on GET
 exports.genre_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update GET");
+  const genre = await Genre.findById(req.params.id).exec();
+  res.render('genre_form', {
+    title: 'Update Genre',
+    genre: genre,
+  });
 });
 
 // Display Genre update form on GET
-exports.genre_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update POST");
-});
+exports.genre_update_post = [
+  body('name', 'Genre name must not be blank')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const genre = new Genre({
+      name: req.body.name,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty) {
+      res.render('genre_form', {
+        title: 'Update Genre',
+        genre: genre,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedGenre = await Genre.findByIdAndUpdate(req.params.id, genre);
+      res.redirect(updatedGenre.url);
+    }
+  }),
+]

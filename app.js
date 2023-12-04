@@ -7,13 +7,38 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
+const compression = require('compression');
+const helmet = require('helmet');
 
+// Create Express application object
 const app = express();
+
+// Add rate limiter (20 requests/minute)
+const RateLimit = require('express-rate-limit');
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+
+app.use(limiter);
+
+// Add Helmet to middleware chain
+// Need to allow libraries like (ugh) jQuery and Bootstrap
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      'script-src': ["'self'", 'code.jquery.com', 'cdn.jsdelivr.net']
+    },
+  }),
+);
 
 // Set up mongoose connection
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
-const mongoDB = 'mongodb+srv://stephengroe:Hg8WydFcEswXiZX6@cluster0.rnyk07o.mongodb.net/local_library?retryWrites=true&w=majority';
+
+const dev_db_url = 'mongodb+srv://stephengroe:Hg8WydFcEswXiZX6@cluster0.rnyk07o.mongodb.net/local_library?retryWrites=true&w=majority';
+
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 main().catch((err) => console.log(err));
 async function main() {
@@ -24,6 +49,7 @@ async function main() {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+app.use(compression());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

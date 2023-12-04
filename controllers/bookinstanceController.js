@@ -128,6 +128,31 @@ exports.book_instance_update_get = asyncHandler(async (req, res, next) => {
 });
 
 // Display BookInstance update form on GET
-exports.book_instance_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: BookInstance update POST");
-});
+exports.book_instance_update_post = [
+  body('imprint', 'Imprint must not be blank')
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const bookInstance = new BookInstance({
+      book: req.body.book,
+      imprint: req.body.imprint,
+      due_back: req.body.due_back,
+      status: req.body.status,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty) {
+      res.render('bookinstance_form', {
+        title: 'Update Copy',
+        bookinstance: bookInstance,
+        errors: errors.array(),
+      });
+    } else {
+      const updatedCopy = await BookInstance.findByIdAndUpdate(req.params.id, bookInstance);
+      res.redirect(updatedCopy.url);ß
+    }
+  }),
+]

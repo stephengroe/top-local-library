@@ -87,7 +87,6 @@ exports.book_instance_create_post = [
   }),
 ];
 
-
 // Display BookInstance delete form on GET
 exports.book_instance_delete_get = asyncHandler(async (req, res, next) => {
   const bookInstance = await BookInstance.findById(req.params.id).exec();
@@ -110,7 +109,22 @@ exports.book_instance_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display BookInstance update form on GET
 exports.book_instance_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: BookInstance update GET");
+  const [bookInstance, allBooks] = await Promise.all([
+    BookInstance.findById(req.params.id).exec(),
+    Book.find().sort({ title: 1 }).exec(),
+  ]);
+
+  if (bookInstance === null) {
+    const err = new Error('Copy not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('bookinstance_form', {
+    title: 'Update Copy',
+    bookinstance: bookInstance,
+    book_list: allBooks,
+  });
 });
 
 // Display BookInstance update form on GET
